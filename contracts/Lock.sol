@@ -41,6 +41,18 @@ contract AnonymousMoxieSender is ReentrancyGuard {
     event TransferCompleted(bytes32 indexed transferId, uint256 amount);
     // Defines an event to notify when a transfer is completed.
 
+    struct AnonymousQuestion {
+        address creator;
+        uint256 amount;
+        string encryptedQuestion;
+        bool answered;
+    }
+
+    mapping(bytes32 => AnonymousQuestion) public questions;
+
+    event QuestionAsked(bytes32 indexed questionId, address indexed creator, uint256 amount);
+    event QuestionAnswered(bytes32 indexed questionId);
+
     constructor(address _moxieTokenAddress, address _verifierAddress) {
         moxieToken = IERC20(_moxieTokenAddress);
         verifier = Verifier(_verifierAddress);
@@ -87,5 +99,34 @@ contract AnonymousMoxieSender is ReentrancyGuard {
         require(moxieToken.transfer(msg.sender, transfer.amount), "Transfer failed");
 
         emit TransferCompleted(_commitment, transfer.amount);
+    }
+
+    function askQuestion(
+        address _creator,
+        uint256 _amount,
+        string memory _encryptedQuestion,
+        bytes32 _commitment
+    ) external nonReentrant {
+        require(_amount > 0, "Amount must be greater than 0");
+        require(bytes(_encryptedQuestion).length > 0, "Question cannot be empty");
+
+        bytes32 questionId = keccak256(abi.encodePacked(_commitment, block.timestamp));
+
+        questions[questionId] = AnonymousQuestion(_creator, _amount, _encryptedQuestion, false);
+
+        require(moxieToken.transferFrom(msg.sender, address(this), _amount), "Transfer failed");
+
+        emit QuestionAsked(questionId, _creator, _amount);
+    }
+
+    function answerQuestion(bytes32 _questionId) external nonReentrant {
+        AnonymousQuestion storage question = questions[_questionId];
+        require(msg.sender == question.creator, "Only the creator can answer");
+        require(!question.answered, "Question already answered");
+
+        question.answered = true;
+        require(moxieToken.transfer(question.creator, question.amount), "Transfer failed");
+
+        emit QuestionAnswered(_questionId);
     }
 }
