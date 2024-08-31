@@ -1,6 +1,13 @@
 import { ethers } from 'ethers';
 import { contractABI, contractAddress } from './contractConfig';
 
+// Add this declaration at the top of the file
+declare global {
+    interface Window {
+        answerQuestion: (questionId: string) => Promise<void>;
+    }
+}
+
 // Initialize the contract
 const provider = new ethers.BrowserProvider(window.ethereum);
 let signer: ethers.Signer;
@@ -36,7 +43,8 @@ function displayQuestions(questions: any[]): void {
     }
 }
 
-async function answerQuestion(questionId: string): Promise<void> {
+// Modify the answerQuestion function
+window.answerQuestion = async function(questionId: string): Promise<void> {
     if (!contract) {
         await initializeContract();
     }
@@ -46,7 +54,7 @@ async function answerQuestion(questionId: string): Promise<void> {
 }
 
 function decryptQuestion(encryptedQuestion: string): string {
-    // Implement decryption logic here
-    // This should use the creator's private key to decrypt the question
-    return 'decrypted_question_placeholder';
+    // TODO: Implement actual decryption logic
+    console.log('Encrypted question:', encryptedQuestion);
+    return 'Decrypted: ' + encryptedQuestion;
 }
