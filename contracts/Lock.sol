@@ -23,8 +23,8 @@ contract AnonymousMoxieSender is ReentrancyGuard {
     uint256 public constant MIN_DELAY = 1 hours;
     // Sets the minimum delay for transfers to 1 hour, enhancing privacy.
 
-    uint256 public constant MAX_DELAY = 7 days;
-    // Sets the maximum delay for transfers to 7 days, balancing privacy and usability.
+    uint256 public constant MAX_DELAY = 3 days;
+    // Sets the maximum delay for transfers to 3 days, balancing privacy and usability.
 
     struct AnonymousTransfer {
         uint256 amount;
