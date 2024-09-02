@@ -75,22 +75,30 @@ library Pairing {
         G1Point memory c1, G2Point memory c2,
         G1Point memory d1, G2Point memory d2
     ) internal view returns (bool) {
-        // Implement pairing check
-        return true; // Placeholder
+        // TODO: Implement actual pairing check
+        // For now, just return true. We'll fix this later.
+        return true;
     }
 
     function addition(G1Point memory p1, G1Point memory p2) internal view returns (G1Point memory r) {
-        // Implement point addition
-        return G1Point(0, 0); // Placeholder
+        // Add two points on the curve
+        // This is a placeholder. We need to implement real EC addition.
+        uint x = (p1.X + p2.X) % FIELD_MODULUS;
+        uint y = (p1.Y + p2.Y) % FIELD_MODULUS;
+        return G1Point(x, y);
     }
 
     function scalar_mul(G1Point memory p, uint s) internal view returns (G1Point memory r) {
-        // Implement scalar multiplication
-        return G1Point(0, 0); // Placeholder
+        // Multiply a point by a scalar
+        // Again, this is a placeholder. Real implementation needed.
+        uint x = (p.X * s) % FIELD_MODULUS;
+        uint y = (p.Y * s) % FIELD_MODULUS;
+        return G1Point(x, y);
     }
 
     function negate(G1Point memory p) internal pure returns (G1Point memory) {
-        // Implement point negation
-        return G1Point(p.X, p.Y); // Placeholder
+        // Negate a point
+        // For elliptic curves, negation is (x, -y)
+        return G1Point(p.X, FIELD_MODULUS - p.Y);
     }
 }
