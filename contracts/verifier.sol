@@ -151,6 +151,13 @@ library Pairing {
         assembly {
             success := staticcall(sub(gas(), 2000), 8, add(input, 0x20), mul(inputSize, 0x20), out, 0x20)
             // Use "invalid" to make gas estimation work
+            switch success case 0 {
+                // If the staticcall fails (success == 0), we use the 'invalid' opcode
+                // This ensures that the transaction reverts during gas estimation,
+                // providing a more accurate gas estimate for failed calls
+                invalid()
+            }
+            // If success == 1, execution continues normally
             switch success case 0 { invalid() }
         }
 
